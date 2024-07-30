@@ -50,17 +50,19 @@ public class Boj7569 {
 			}
 
 			// 전부 1일때
-			if (cnt == 0) {
-				System.out.print(0);
-				return;
-			}
-			int re = bfs();
-			System.out.println(re);
+
 		}
+
+		if (cnt == 0) {
+			System.out.print(0);
+			return;
+		}
+		int re = bfs();
+		System.out.println(re);
+
 	}
 
 	public static int checkVisited() {
-		System.out.println("실행됨");
 		for (int k = 0; k < H; k++) {
 			for (int i = 0; i < N; i++) {
 				for (int j = 0; j < M; j++) {
@@ -110,9 +112,9 @@ public class Boj7569 {
 
 		}
 		result -= 1;
-//		if (checkVisited() == -1) {
-//			return -1;
-//		}
+		if (checkVisited() == -1) {
+			return -1;
+		}
 		return result;
 	}
 }
