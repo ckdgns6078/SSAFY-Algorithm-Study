@@ -20,7 +20,7 @@ class Point{
     }
 }
 
-public class copy1 {
+public class 말이되고픈원숭이_1600 {
 	static int K, W, H;
 	static int[][] arr;
 	static boolean[][][] v;
