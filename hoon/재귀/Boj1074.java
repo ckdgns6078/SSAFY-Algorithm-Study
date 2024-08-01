@@ -1,5 +1,5 @@
 import java.util.Scanner;
-public class Main {
+public class Boj1074 {
 
 	static int value = 0;
 	static int r;

@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-public class Main {
+public class Boj2630 {
 
 	static int [][]map;
 	static int N;
@@ -67,4 +67,5 @@ public class Main {
 		
 		
 	}
+
 }

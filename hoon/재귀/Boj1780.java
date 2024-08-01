@@ -1,12 +1,6 @@
-import java.util.Collections;
-import java.nio.file.spi.FileSystemProvider;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Scanner;
 
-public class Main {
-
+public class Boj1780 {
 	static int[][] map;
 	static int N;
 
