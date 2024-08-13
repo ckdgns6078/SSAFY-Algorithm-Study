@@ -75,9 +75,9 @@ public class Main {
 	private static void bfs(int x, int y) {
 		Queue<Point> q = new ArrayDeque<>();
 		q.offer(new Point(x, y));
+        map[x][y] = cnt;
 		while(!q.isEmpty()) {
 			Point cur = q.poll();
-			map[cur.x][cur.y] = cnt;
 			for (int i = 0; i < dx.length; i++) {
 				int nx = cur.x + dx[i];
 				int ny = cur.y + dy[i];
@@ -86,6 +86,7 @@ public class Main {
 				// 방문 o 점, 바다
 				if (map[nx][ny] > 1 || map[nx][ny] == 0) continue;
 				q.offer(new Point(nx, ny));
+                map[nx][ny] = cnt;
 			}
 		}
 	}
