@@ -1,10 +1,15 @@
 import java.util.*;
 
 class Point {
-	int x, y;
+	int x, y, d;
 	Point(int x, int y) {
 		this.x = x;
 		this.y = y;
+	}
+	Point(int x, int y, int d) {
+		this.x = x;
+		this.y = y;
+		this.d = d;
 	}
 }
 public class Main {
@@ -36,30 +41,39 @@ public class Main {
 		for (int i = 0; i < n; i++) {
 			for (int j = 0; j < n; j++) {
 				if (map[i][j] > 1) {
-					bfs2(i, j);
+					for (int d = 0; d < dx.length; d++) {
+						int nx = i + dx[d];
+						int ny = j + dy[d];
+						if (nx < 0 || nx >= n || ny < 0 || ny >=n) continue;
+						if (map[nx][ny] == 0) { // 바다와 인접
+							bfs2(i, j);
+							break;
+						}
+					}
 				}
 			}
 		}
 		System.out.println(ans - 1);
 	}
 	private static void bfs2(int x, int y) {
-		int[][] dis = new int[n][n];
+		vis = new boolean[n][n];
 		Queue<Point> q = new ArrayDeque<>();
-		q.offer(new Point(x, y));
-		dis[x][y] = 0;
+		q.offer(new Point(x, y, 0));
+		vis[x][y] = true;
 		while(!q.isEmpty()) {
 			Point cur = q.poll();
 			for (int i = 0; i < dx.length; i++) {
 				int nx = cur.x + dx[i];
 				int ny = cur.y + dy[i];
+				int nd = cur.d + 1;
 				// 범위 밖
 				if (nx < 0 || nx >= n || ny < 0 || ny >=n) continue;
 				// 방문 o 점
-				if (dis[nx][ny] > 0) continue;
-				q.offer(new Point(nx, ny));
-				dis[nx][ny] = dis[cur.x][cur.y] + 1;
+				if (vis[nx][ny]) continue;
+				q.offer(new Point(nx, ny, nd));
+				vis[nx][ny] = true;
 				if (map[x][y] != 0 && map[nx][ny] != 0 && map[x][y] != map[nx][ny]) {
-					if (dis[nx][ny] < ans) ans = dis[nx][ny];
+					if (nd < ans) ans = nd;
 				}
 			}
 		}
