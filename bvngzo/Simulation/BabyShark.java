@@ -79,7 +79,7 @@ public class Main {
 				if (fishes.size() == 0 && Q.isEmpty())
 					break L; // 식사 불가 + 이동 불가
 
-				if (fishes.size() > 0) { // 현재 dist 범위에는 먹을 수 있는 고기가 없음
+				if (fishes.size() > 0) { // 식사
 					int targetR = N + 1;
 					int targetC = N + 1;
 
