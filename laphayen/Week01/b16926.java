@@ -1,4 +1,5 @@
 /*
+ * 배열 돌리기 1
  * 106568KB
  * 1440ms
  * Java 8
@@ -7,7 +8,7 @@
 
 import java.util.Scanner;
 
-public class Main {
+public class b16926 {
 	
 	static int [][] map;
 	static int n;
