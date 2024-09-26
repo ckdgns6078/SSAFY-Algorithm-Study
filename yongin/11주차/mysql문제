@@ -1,0 +1,29 @@
+-- 코드를 입력하세요
+-- MEMBER_PROFILE와 REST_REVIEW 테이블에서 리뷰를 가장 많이 작성한 회원의 리뷰들을 조회하는 SQL문 작성
+
+# select * from member_profile;
+# select distinct member_id from rest_review;
+# ksjs1115@gmail.com
+# soso94@naver.com
+# minjea985@naver.com
+# 김서준, 정소율, 김민재
+-- 리뷰를 가장 많이 작성한 수
+# select distinct count(*) from rest_review group by member_id order by count(*) desc limit 1;
+
+-- 리뷰를 가장 많이 작성한 사람의 아이디
+# select member_id, count(*)
+# from rest_review 
+# group by member_id
+# having count(*) = (select distinct count(*) from rest_review group by member_id order by count(*) desc limit 1);
+
+-- answer
+select member_name MEMBER_NAME, review_text REVIEW_TEXT, date_format(review_date, "%Y-%m-%d") REVIEW_DATE
+from member_profile m join rest_review r on (m.member_id=r.member_id)
+where m.member_id in (select member_id
+from rest_review 
+group by member_id
+having count(*) = (select distinct count(*) from rest_review group by member_id order by count(*) desc limit 1))
+order by REVIEW_DATE, REVIEW_TEXT asc;
+
+# SELECT member_name, review_text, review_date
+# from member_profile, rest_review
