@@ -1,7 +1,6 @@
 import java.util.ArrayList;
 import java.util.Scanner;
 
-// 질문게시판에 잇는 수많은 반례를 시도해 보았는데 반례를 찾지 못함....
 // 이분탐색의 비교 기준을 '거리'로 잡음
 public class Main {	
 	static ArrayList<Integer> housePositions = new ArrayList<Integer>();
@@ -25,9 +24,6 @@ public class Main {
 		
 		while(true) {
 			routerNum = getRouterNum(mid);
-			System.out.println("mid: " + mid);
-			System.out.println("routerNum: " + routerNum);
-			System.out.println();
 			
 			if (routerNum < C) {
 				// mid(거리)를 줄여야 함
