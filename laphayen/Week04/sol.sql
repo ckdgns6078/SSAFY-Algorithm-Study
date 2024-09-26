@@ -1,3 +1,6 @@
+/*
+실패 지점 - %Y-%m-%d으로 데이터 포맷팅
+*/
 SELECT 
 MP.MEMBER_NAME, RR.REVIEW_TEXT, DATE_FORMAT(RR.REVIEW_DATE, "%Y-%m-%d") AS REVIEW_DATE
 FROM 
