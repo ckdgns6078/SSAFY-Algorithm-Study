@@ -26,7 +26,6 @@ public class Main {
 	public static void main(String[] args) {
 		Scanner sc = new Scanner(System.in);
 		int n = sc.nextInt();
-		int[][] cmds = new int[n][3];
 
 		boolean[][] green = new boolean[6][4];
 		boolean[][] blue = new boolean[6][4];
@@ -120,7 +119,7 @@ public class Main {
 			board[r + 1][c] = true;
 			line[r]++;
 			line[r+1]++;
-			boolean flag=false;
+
 			// full row
 			for (int k = r + 1; k >= r; k--) {
 				while (line[k] == 4) {
