@@ -1,205 +1,165 @@
 import java.util.*;
 
 public class Main {
+
 	static int n;
-	static int[][] map = new int[10][10];
-	static int[][] order;
-	static int score = 0;
-	static PriorityQueue<Integer> greenQueue = new PriorityQueue();
-	static PriorityQueue<Integer> blueQueue = new PriorityQueue();
-
-	public static void main(String[] args) {
+	static int[] arr;
+	static int position;
+	static int answer = 0;
+	static int[][] map;
+	public static void main(String[] args){
 		Scanner sc = new Scanner(System.in);
-
-		/*
-		 * t = 1: 크기가 1×1인 블록을 (x, y)에 놓은 경우 t = 2: 크기가 1×2인 블록을 (x, y), (x, y+1)에 놓은 경우
-		 * t = 3: 크기가 2×1인 블록을 (x, y), (x+1, y)에 놓은 경우
-		 */
 		n = sc.nextInt();
-		order = new int[n][3];
+		arr = new int[n];
+		map = new int[n][n];
+		for(int i=0;i<n;i++) {
+			arr[i] = sc.nextInt();
+		}
+		
+		for(int i=0;i<n;i++) {
+			for(int j=0;j<n;j++) {
+				map[i][j] = sc.nextInt();
+			}
+		}
+		position = sc.nextInt();
+		
+		recursive(n , arr , 0);
+		System.out.println(answer);
+		
+	}
+	
+	public static void recursive2(int turn , int[] gameList , int result) {
+		if(mafiaCheck(gameList) || citizenCheck(gameList)) {
+			answer = Math.max(answer , result);
+			return;
+		}
+		
+		
+		if(turn%2==0) {
+			for(int i=0;i<n;i++) {
+				if(i!=position && gameList[i]!=888) {
+					int[] tempList = gameList.clone();
+					gameList[i] = 888;
+					
+					for(int j=0;j<n;j++) {
+						if(gameList[j]!=888) {
+							gameList[j] = map[i][j];
+						}
+					}
+					recursive(turn-1 , gameList , result +1);
+					for(int j=0;j<n;j++) {
+						gameList[i] = tempList[i];
+					}
+				}
+			}
+		}else {
+			int cnt =0;
+			int min = Integer.MIN_VALUE;
+			for(int i=0;i<n;i++) {
+				if(gameList[i]!=888) {
+					if(min < gameList[i]) {
+						min = Math.max(min , gameList[i]);
+						cnt = i;
+						
+						
+					}
+				}
+			}
+			int temp = gameList[cnt];
+			gameList[cnt] = 888;
+			recursive(turn -1 , gameList , result);
+			gameList[cnt] = temp; 
+		}
+	}
+
+	public static void recursive(int turn, int[] gameList, int result) {
+		if (mafiaCheck(gameList) || citizenCheck(gameList)) {
+			answer = Math.max(answer, result);
+			return;
+		}
+
+		if (turn % 2 == 0) {  // 밤 (은진이의 차례)
+			for (int i = 0; i < n; i++) {
+				if (gameList[i] != 888 && i != position) {
+					int originData = gameList[i];
+					mafia(i, gameList);					
+					recursive(turn - 1, gameList, result + 1);
+					reset(i , gameList , originData);
+				}
+			}
+		} else {  // 낮 (시민들의 차례)
+			int cnt =0;
+			int min = Integer.MIN_VALUE;
+			for(int i=0;i<n;i++) {
+				if(gameList[i]!=888) {
+					if(min < gameList[i]) {
+						min = Math.max(min , gameList[i]);
+						cnt = i;
+						
+						
+					}
+				}
+			}
+			int temp = gameList[cnt];
+			gameList[cnt] = 888;
+			recursive(turn -1 , gameList , result);
+			gameList[cnt] = temp; 
+		}
+	}
+
+	private static void reset(int idx, int[] gameList , int originData) {
+		for(int i=0;i<n;i++) {
+			if(gameList[i]!=888) {
+				gameList[i] -= map[idx][i];
+			}
+		}		
+		gameList[idx] = originData;
+	}
+
+	public static void mafia(int idx, int[] gameList) {
+		gameList[idx] = 888;
 		for (int i = 0; i < n; i++) {
-			order[i][0] = sc.nextInt();
-			order[i][1] = sc.nextInt();
-			order[i][2] = sc.nextInt();
+			if (gameList[i] != 888) {
+				gameList[i] += map[idx][i];
+			}
 		}
-
+	}
+	
+	public static void citizen(int[] gameList) {
+		int maxValue = Integer.MIN_VALUE;
+		int maxIndex = -1;
 		for (int i = 0; i < n; i++) {
-			move(order[i]);
-			breakBluck();
-			moveStep();
-			specialBluck();
-			moveStep();
+			if (gameList[i] != 888 && gameList[i] > maxValue) {
+				maxValue = gameList[i];
+				maxIndex = i;
+			}
 		}
-		System.out.println(score);
-		System.out.println(countBluck());
-
-	}
-
-	/*
-	 * t = 1: 크기가 1×1인 블록을 (x, y)에 놓은 경우 t = 2: 크기가 1×2인 블록을 (x, y), (x, y+1)에 놓은 경우
-	 * t = 3: 크기가 2×1인 블록을 (x, y), (x+1, y)에 놓은 경우
-	 */
-	public static void printArr() {
-		for (int i = 0; i < 10; i++) {
-			System.out.println(Arrays.toString(map[i]));
+		// 유죄 지수가 가장 높은 사람 죽이기
+		if (maxIndex != -1) {
+			gameList[maxIndex] = 888;
 		}
 	}
-
-	public static void move(int[] data) {
-		int r = data[1];
-		int c = data[2];
-		int green = r;
-		int blue = c;
-		switch (data[0]) {
-		case 1: // 1x1 블록
-			while (green < 10 && map[green][c] == 0) {
-				green++;
-			}
-			while (blue < 10 && map[r][blue] == 0) {
-				blue++;
-			}
-			map[green - 1][c] = 1;
-			map[r][blue - 1] = 1;
-			break;
-
-		case 2: // 1x2 블록
-			while (green < 10 && map[green][c] == 0 && map[green][c + 1] == 0) {
-				green++;
-			}
-			map[green - 1][c] = 1;
-			map[green - 1][c + 1] = 1;
-
-			while (blue < 10 && map[r][blue] == 0) {
-				blue++;
-			}
-			map[r][blue - 1] = 1;
-			map[r][blue - 2] = 1;
-			break;
-
-		case 3: // 2x1 블록
-			while (green < 10 && map[green][c] == 0) {
-				green++;
-			}
-			map[green - 1][c] = 1;
-			map[green - 2][c] = 1;
-
-			while (blue < 10 && map[r][blue] == 0 && map[r + 1][blue] == 0) {
-				blue++;
-			}
-			map[r][blue - 1] = 1;
-			map[r + 1][blue - 1] = 1;
-			break;
+	
+	private static boolean mafiaCheck(int[] gameList) {		
+		if(gameList[position] == 888) {
+			return true;
 		}
-
+		return false;
 	}
-
-	// 점수는 1점씩 오른다.
-	// 부수고 점수를 더하는 함수
-	public static void breakBluck() {
-		// green
-		for (int i = 4; i < 10; i++) {
-			int cnt = 0;
-			for (int j = 0; j < 4; j++) {
-				if (map[i][j] > 0) {
-					cnt++;
-				} else {
-					break;
-				}
-
-			}
-			if (cnt == 4) {
-				score++;
-				Arrays.fill(map[i], 0);
-				greenQueue.offer(i);
+	
+	private static boolean citizenCheck(int[] gameList) {
+		int cnt =0;
+		for(int i=0;i<gameList.length;i++) {
+			if(i!=position && gameList[i]!=888) {
+				cnt++;
 			}
 		}
-
-		for (int i = 4; i < 10; i++) {
-			int cnt = 0;
-			for (int j = 0; j < 4; j++) {
-				if (map[j][i] > 0) {
-					cnt++;
-				} else {
-					break;
-				}
-			}
-			if (cnt == 4) {
-				score++;
-				for (int k = 0; k < 4; k++) {
-					map[k][i] = 0;
-				}
-				blueQueue.offer(i);
-			}
-		}
-
+		if(cnt==0) {
+			return true;
+		}else {
+			return false;
+		}		
 	}
-
-	// 부숴진 칸을 이동시키는 함수 4
-	public static void moveStep() {
-		while (!greenQueue.isEmpty()) {
-			int idx = greenQueue.poll();
-			for (int i = idx; i >= 4; i--) {
-				// 이전의 값들을 옮긴다.
-				for (int j = 0; j < 4; j++) {
-					map[i][j] = map[i - 1][j];
-				}
-			}
-		}
-
-		while (!blueQueue.isEmpty()) {
-			int idx = blueQueue.poll();
-			for (int i = idx; i >= 4; i--) {
-				for (int j = 0; j < 4; j++) {
-					map[j][i] = map[j][i - 1];
-				}
-			}
-		}
-
-	}
-
-	// 특수한 칸으로 제거하는 함수
-	public static void specialBluck() {
-		// green
-		for (int i = 4; i <= 5; i++) {
-			for (int j = 0; j < 4; j++) {
-				if (map[i][j] > 0) {
-					greenQueue.offer(i + 4);
-					break;
-				}
-			}
-		}
-
-		for (int i = 4; i <= 5; i++) {
-			for (int j = 0; j < 4; j++) {
-				if (map[j][i] > 0) {
-					blueQueue.offer(i + 4);
-					break;
-				}
-			}
-		}
-	}
-
-	// 맵의 수량을 확인하는 함수
-	public static int countBluck() {
-		int cnt = 0;
-
-		for (int i = 6; i < 10; i++) {
-			for (int j = 0; j < 4; j++) {
-				if (map[i][j] > 0) {
-					cnt++;
-				}
-			}
-		}
-
-		for (int i = 6; i < 10; i++) {
-			for (int j = 0; j < 4; j++) {
-				if (map[j][i] > 0) {
-					cnt++;
-				}
-			}
-		}
-
-		return cnt;
-	}
-
+	
+	
 }
